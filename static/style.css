@@ -1,0 +1,126 @@
+/* --- Global Styles & Typography --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.card {
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    background-color: #ffffff;
+}
+
+/* --- Clinical Triage Text Colors (For Percentages) --- */
+.text-success { color: #10b981 !important; } 
+.text-warning { color: #f59e0b !important; } 
+.text-danger  { color: #ef4444 !important; } 
+.text-primary { color: #004e92 !important; } 
+
+/* --- NEW: Medical Icon Signature Styles --- */
+
+/* Stroke - Vitality/Emergency Red */
+.bi-activity { 
+    color: #ef4444 !important; 
+    filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.3));
+}
+
+/* CKD - Clinical/Hydration Blue */
+.bi-droplet-fill { 
+    color: #3b82f6 !important; 
+    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.3));
+}
+
+/* Hypertension - Warning/Pressure Orange */
+.bi-speedometer2 { 
+    color: #f59e0b !important; 
+    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.3));
+}
+
+/* Row Icon Alignment */
+.risk-row i {
+    font-size: 1.25rem;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* --- Evidence Containers --- */
+.img-container {
+    background: #0f172a; 
+    border-radius: 12px;
+    width: 100%;
+    aspect-ratio: 1 / 1;    
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;       
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.border-specialist {
+    border: 2px solid #f1c40f !important;
+}
+
+.img-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+/* --- THE FIX: NO CHOPPING --- */
+#originalDisplay, 
+#heatmapMainDisplay, 
+#heatmapHypDisplay {
+    width: 100%;
+    height: auto;
+    max-height: 85%; /* Gives enough room for the label at the top */
+    object-fit: contain; 
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+/* --- Hover Animation --- */
+.img-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.img-container:hover img {
+    transform: scale(1.08); 
+}
+
+/* --- Clinical Insight Box --- */
+.alert-primary {
+    background-color: #f1f5f9;
+    border-left: 6px solid #004e92 !important;
+    border-radius: 12px;
+}
+
+#insightText {
+    color: #334155;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background: linear-gradient(135deg, #004e92 0%, #000428 100%);
+    border: none;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #003a6d 0%, #000428 100%);
+    transform: translateY(-1px);
+}
