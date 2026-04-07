@@ -20,7 +20,7 @@ The system operates on a **Dual-Stream Hybrid Ensemble** architecture:
 
 ## 📊 Dataset & Training
 The models were developed using a curated subset of high-resolution retinal fundus scans:
-* **Primary Source:** **UK Biobank** (Vascular-labeled subset) and **MESSIDOR-2** for multi-organ clinical validation.
+* **Primary Source:** **ODIR-5K**(Dataset of 5000+ fundal images with labels) for clinical validation.
 * **Preprocessing:** Images were normalized using **Ben Graham's Preprocessing** and resized to $224 \times 224$ (ResNet) and $300 \times 300$ (EfficientNet).
 * **Storage:** Large model weights ($>100\text{MB}$) are managed via **Git LFS** for repository integrity.
 
