@@ -1,0 +1,8 @@
+{
+  "file": "fundus_gatekeeper_v2_massive.keras",
+  "preprocessing": "rgb_0_1",
+  "fundus_class_index": 0,
+  "accept_threshold": 0.5,
+  "contract_status": "empirically_checked_training_metadata_unavailable",
+  "evidence": "The unchanged checkpoint accepted 9 retinal examples and rejected 15 non-retinal/control examples with RGB/255 and class 0 as fundus. This is a limited behavioural check, not recovered training metadata or a population accuracy estimate. See reports/gatekeeper_audit.csv."
+}

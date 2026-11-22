@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}Retina • Microvascular Analysis{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark" aria-hidden="true">◉</span><span>RETINA<small>Microvascular research</small></span></a>
+    {% if g.user %}
+    <div class="account"><span>{{ g.user['username'] }}</span><form action="{{ url_for('logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button secondary small" type="submit">Sign out</button></form></div>
+    {% else %}<span class="pill">Research workspace</span>{% endif %}
+  </header>
+  {% block content %}{% endblock %}
+  <footer class="footer">Abir Kumar Chakraborty &amp; Adrija Saha <span>IEM Kolkata · Guided by Prof. Shreejita Mukherjee</span></footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Set up your account' if setup else 'Sign in' }} • Retina{% endblock %}
+{% block content %}
+<main class="auth-layout">
+  <section class="auth-intro">
+    <span class="eyebrow">RETINAL IMAGE WORKSPACE</span>
+    <h1>A clearer view.<br>A considered interpretation.</h1>
+    <p>Explore model evidence, trace the retinal vessel network, and review the findings in one place.</p>
+    <div class="auth-features"><span>01 &nbsp; Specialist model analysis</span><span>02 &nbsp; Grad-CAM visual evidence</span><span>03 &nbsp; U-Net vessel segmentation</span></div>
+    <div class="research-note">Built for research and supervised review. Outputs are not a diagnosis.</div>
+  </section>
+  <section class="auth-card panel">
+    <span class="eyebrow">{{ 'FIRST-TIME SETUP' if setup else 'WELCOME BACK' }}</span>
+    <h2>{{ 'Create your local account' if setup else 'Sign in to your workspace' }}</h2>
+    <p class="muted">{{ 'Choose your own credentials. No default password is installed.' if setup else 'Access your retinal analyses and protected image results.' }}</p>
+    {% if error %}<div class="error-box" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" minlength="3" maxlength="40" pattern="[A-Za-z0-9_.-]{3,40}" required autofocus>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="{{ 'new-password' if setup else 'current-password' }}" {% if setup %}minlength="12"{% endif %} maxlength="128" required>
+      {% if setup %}
+      <small class="muted">Use at least 12 characters.</small>
+      <label for="confirm_password">Confirm password</label>
+      <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" minlength="12" maxlength="128" required>
+      {% endif %}
+      <button class="button" type="submit">{{ 'Create account & continue' if setup else 'Sign in' }} <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="auth-foot">Your account stays on this computer. {% if not setup %}For a password reset, use the local reset command in the README.{% endif %}</p>
+  </section>
+</main>
+{% endblock %}

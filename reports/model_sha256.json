@@ -1,0 +1,27 @@
+[
+  {
+    "file": "ckd_specialist.keras",
+    "sha256": "d5b17cc6a0acb4deaae49e899fbd139ca7448082e9fe6f74723330f7e8d3a9a3",
+    "unchanged_from_original": true
+  },
+  {
+    "file": "fundus_gatekeeper_v2_massive.keras",
+    "sha256": "720b962bb52ad7ecdd93e3da07f9971bcdafc3575309f6fb34d2bdcb0587c4e1",
+    "unchanged_from_original": true
+  },
+  {
+    "file": "hypertension_specialist.keras",
+    "sha256": "17778a7528a837bec021f8fa7ea11eb1a2176b40e1b12867720b735604839c93",
+    "unchanged_from_original": true
+  },
+  {
+    "file": "stroke_specialist.keras",
+    "sha256": "8a24d52be7451e7a600eb9262165c0af7bf2aada42b05fade5127d8177fea02b",
+    "unchanged_from_original": true
+  },
+  {
+    "file": "unet_vessel_segmentation.keras",
+    "sha256": "a31161f43d1f658bd8376365d1a74c496849fefb34edf3ac877035eda78977b9",
+    "unchanged_from_original": true
+  }
+]
