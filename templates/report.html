@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Retinal analysis report • Retina{% endblock %}
+{% block content %}
+<main class="workspace report-page">
+  <div class="page-heading"><div><span class="eyebrow">ANALYSIS REPORT</span><h1>Retinal microvascular review</h1><p>{{ data.created_at_utc }} · ID {{ data.request_id[:8] }}</p></div><div class="report-actions"><button class="button secondary small" id="printReport">Print / Save PDF</button><a class="button secondary small" href="{{ data.report_download_url }}">Download JSON</a><a href="{{ url_for('index') }}">Back to workspace</a></div></div>
+  <section class="panel">{% if data.gatekeeper and data.gatekeeper.accepted %}<p class="pill mint">Fundus image check passed</p>{% endif %}<h2>Model predictions (%) &amp; Grad-CAM</h2><p>Explanation target: evidence {{ 'increasing' if data.cam_target == 'positive' else 'decreasing' }} the prediction.</p><div class="image-grid">
+    <figure><div class="image-box"><img src="{{ data.raw_url }}" alt="Original fundus"></div><figcaption>Original</figcaption></figure>
+    {% for key,name in [('hyp','Hypertension'),('ckd','CKD'),('stroke','Stroke')] %}
+    <figure><div class="image-box">{% if data.scores[key].map_url %}<img src="{{ data.scores[key].map_url }}" alt="{{ name }} Grad-CAM">{% else %}<span>Explanation unavailable</span>{% endif %}</div><figcaption>{{ name }} · {{ data.scores[key].display_score }}</figcaption></figure>
+    {% endfor %}
+  </div><p class="hint">Predictions are experimental, not calibrated clinical risk percentages. Grad-CAM is a coarse model explanation, not a lesion map.</p></section>
+  <section class="panel"><h2>U-Net vessel findings</h2>{% if data.vessels.mask_url %}<div class="image-grid vessel-grid">{% for key,title in [('overlay_url','Vessel overlay'),('mask_url','Binary mask'),('probability_url','Vessel probabilities')] %}<figure><div class="image-box"><img src="{{ data.vessels[key] }}" alt="{{ title }}"></div><figcaption>{{ title }}</figcaption></figure>{% endfor %}</div><p>Vessel area: {{ '%.2f'|format(data.vessels.vessel_area_percent) }}% of estimated field. Processed size: {{ data.vessels.processed_size[0] }} × {{ data.vessels.processed_size[1] }} pixels.</p>{% else %}<p>Segmentation unavailable.</p>{% endif %}</section>
+  <section class="panel interpretation-panel"><span class="step">FINAL REVIEW</span><h2>Clinical interpretation</h2><div class="conclusion"><span class="pill">{{ data.interpretation.status }}</span><p>{{ data.interpretation.summary }}</p>{% if data.interpretation.caution %}<p class="hint">{{ data.interpretation.caution }}</p>{% endif %}</div>
+    <div class="findings-grid">{% for finding in data.interpretation.findings %}<article><h3>{{ finding.title }}</h3><p>{{ finding.text }}</p></article>{% endfor %}</div>
+    <details><summary>Measurement limits and clinical context</summary><h3>Clinical correlation</h3><ul>{% for item in data.interpretation.clinical_correlation %}<li>{{ item }}</li>{% endfor %}</ul>
+    <h3>Limits of this analysis</h3><ul>{% for item in data.interpretation.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+    </details><h3>References</h3><ul>{% for item in data.interpretation.references %}<li><a href="{{ item.url }}" rel="noopener" target="_blank">{{ item.label }}</a></li>{% endfor %}</ul>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='report.js') }}" defer></script>{% endblock %}

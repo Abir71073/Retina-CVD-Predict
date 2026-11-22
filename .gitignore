@@ -1,5 +1,13 @@
-static/heatmaps/*.jpg
+.venv/
+instance/
 __pycache__/
-venv/
-.env
+.pytest_cache/
 *.pyc
+
+.env
+.env.*
+*.sqlite3*
+static/uploads/
+static/results/
+static/heatmaps/
+.cache/

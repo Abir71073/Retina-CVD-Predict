@@ -1,49 +1,45 @@
-[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/abirkchakraborty/Retina-CVD-Predict)
-# 👁️ Retina-CVD Predict
-### **Dual-Stream Hybrid Ensemble for Multi-Organ Risk Assessment**
-
-**Retina-CVD Predict** is an Explainable AI (XAI) platform designed to predict the 5-year risk of **Stroke**, **Chronic Kidney Disease (CKD)**, and **Hypertension** through non-invasive retinal fundus imaging. By utilizing the retina as a "window" into systemic microvascular health, this system identifies pathological biomarkers often invisible to human clinicians.
-
+---
+title: Retina CVD Predict
+emoji: 👁️
+colorFrom: gray
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: Retinal fundus classifiers and vessel segmentation
 ---
 
-## 🚀 Core Technology
-The system operates on a **Dual-Stream Hybrid Ensemble** architecture:
-* **The Generalist (ResNet-50):** Optimized for global feature extraction to identify macro-structural changes associated with **Stroke** and **CKD**.
-* **The Specialist (EfficientNet-B3):** A high-resolution stream dedicated to **Hypertension**, focusing on fine-grained arteriolar narrowing and vascular density.
-* **Cubic XAI ($x^3$):** Integrated Grad-CAM visualization using **Cubic Saliency Sharpening** to eliminate background noise and isolate critical vascular lesions.
+# Retina-CVD Predict
 
-## ✨ Key Features
-* **Dynamic Clinical Triage:** Real-time risk stratification using medical-grade color coding (Green/Yellow/Red).
-* **Probability-Scaled Heatmaps:** Saliency intensity is mathematically tied to the prediction score, ensuring visual honesty in the diagnostic output.
-* **Automated Interpretation:** A heuristic engine that generates professional insights, such as detecting "vessel tortuosity" or "micro-aneurysm patterns."
-* **Modern UI/UX:** A responsive dashboard optimized for clinical environments, featuring synchronized triple-pane evidence views.
+The Flask application screens a fundus photograph, runs three specialist classifiers, and segments retinal vessels using U-Net. Each report includes model scores, Grad-CAM maps, and image-space vessel measurements. Scores are experimental outputs for review.
 
-## 📊 Dataset & Training
-The models were developed using a curated subset of high-resolution retinal fundus scans:
-* **Primary Source:** **ODIR-5K**(Dataset of 5000+ fundal images with labels) for clinical validation.
-* **Preprocessing:** Images were normalized using **Ben Graham's Preprocessing** and resized to $224 \times 224$ (ResNet) and $300 \times 300$ (EfficientNet).
-* **Storage:** Large model weights ($>100\text{MB}$) are managed via **Git LFS** for repository integrity.
+**Publishing this update?** Follow [the GitHub and Hugging Face release guide](docs/RELEASE.md). The ZIP contains the actual model weights.
 
-## 🛠️ Installation & Setup
-1.  **Clone the Repository:**
-    ```bash
-    git clone [https://github.com/Abir71073/Retina-CVD-Predict.git](https://github.com/Abir71073/Retina-CVD-Predict.git)
-    cd Retina-CVD-Predict
-    ```
-2.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  **Launch Dashboard:**
-    ```bash
-    python app.py
-    ```
-    *Access the UI at `http://127.0.0.1:5000`.*
+## Run locally
+Use 64-bit Python 3.12. On Windows, double-click `start_windows.bat`. Or run the following commands from the repository root in PowerShell:
 
-## 👥 Contributors
-* **Abir Kumar Chakraborty**
-* **Institution:** Institute of Engineering and Management (IEM), Kolkata
-* **Guided by:** Prof. Shreejita Mukherjee
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements.txt
+.\.venv\Scripts\python app.py
+```
 
----
-*Disclaimer: Developed for the Innovative Project-II curriculum. For research and academic purposes only. Not intended for direct diagnostic use.*
+Open http://127.0.0.1:5000 and create your local account. In a Linux environment, use `python3.12 -m venv .venv` and `.venv/bin/python` instead. For a Git clone, run `git lfs pull` before starting the app.
+
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| Root Python modules and JSON configs | Flask entry point, account handling, inference, vessel measurements and report generation |
+| Five root-level .keras files | Checkpoints loaded by the application |
+| static/ and templates/ | Dashboard scripts, styles and HTML |
+| test/ and tests/ | Example fundus photographs and automated tests, respectively |
+| tools/ | Training, evaluation, diagnostics and model integrity checks |
+| training_fy.ipynb | Historical training notebook |
+| reports/ and conf_matrix/ | Recorded evaluations, model checksums and confusion matrices |
+| docs/ | Publishing instructions, implementation notes and image-gate audit |
+| Dockerfile and space_wsgi.py | Hosted entry point for a Docker Space |
+
+Run `python -m tools.verify_models` to check the weights and `python -m pytest -q` in the application environment to run the tests. The application creates its accounts, sessions and generated analyses in the local instance directory on first use.
+
+[GitHub repository](https://github.com/Abir71073/Retina-CVD-Predict) · [Hugging Face Space](https://huggingface.co/spaces/abirkchakraborty/Retina-CVD-Predict)

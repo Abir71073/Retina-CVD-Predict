@@ -1,110 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retina-CVD Predict | IEM Innovative Project</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body class="bg-light">
-
-    <nav class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1"><i class="bi bi-eye-fill text-info"></i> Retina-CVD Predict</span>
-            <span class="text-white-50 small">IEM Innovative Project-II | Hybrid Ensemble Mode</span>
+{% extends 'base.html' %}
+{% block content %}
+<main class="workspace">
+  <div class="page-heading"><div><span class="eyebrow">DUAL-STREAM ANALYSIS</span><h1>Retinal microvascular review</h1><p>Specialist model evidence and vessel segmentation, together.</p></div><span class="pill">Research use · clinician review</span></div>
+  <div class="workspace-grid">
+    <aside class="panel controls">
+      <span class="step">01 / INPUT</span><h2>Start an analysis</h2><span class="pill mint">Fundus gatekeeper active</span>
+      <label class="input-label" for="imageInput">Retinal fundus image</label>
+      <div class="upload-area"><span class="upload-icon" aria-hidden="true">↥</span><input type="file" id="imageInput" accept="image/jpeg,image/png,image/tiff,image/bmp,image/webp"><p>JPEG, PNG, TIFF, BMP or WebP<br>Up to 16 MB · 16 megapixels</p><p>Uploads are screened for retinal fundus content.</p></div>
+      <label class="input-label" for="camTarget">Grad-CAM evidence</label>
+      <select id="camTarget"><option value="positive">Regions increasing the model prediction</option><option value="negative">Regions decreasing the model prediction</option></select>
+      <p class="hint">This changes the explanation target, not the prediction. Re-run to view the other target.</p>
+      <button class="button" id="runBtn" type="button">Run both streams <span aria-hidden="true">→</span></button>
+      <div id="loadingState" class="loading" hidden><span class="spinner"></span>Analysing classifiers and vessel network…</div>
+      <p id="gatekeeperStatus" class="hint">Fundus check runs before both analysis streams.</p>
+      <p id="statusMessage" class="status" role="status" aria-live="polite">Select an image to begin.</p>
+      <div class="score-section"><span class="step">MODEL PREDICTION (%)</span>
+        <div class="score-item"><span>Hypertension</span><strong id="valHyp">—</strong></div>
+        <div class="score-item"><span>CKD</span><strong id="valCkd">—</strong></div>
+        <div class="score-item"><span>Stroke</span><strong id="valStroke">—</strong></div>
+        <p class="hint">Experimental predictions; clinical risk calibration is unavailable.</p>
+      </div>
+    </aside>
+    <div class="analysis-content">
+      <section class="panel evidence-panel">
+        <div class="section-heading"><div><span class="step">02 / MODEL EVIDENCE</span><h2>Grad-CAM explanations</h2></div><label class="toggle"><input type="checkbox" id="rawCamToggle">Activation grid</label></div>
+        <p class="muted" id="camDescription">Regions increasing each model’s prediction. Heatmap intensity is relative within each image, not comparable across models.</p>
+        <div class="image-grid">
+          <figure><div class="image-box"><img id="imgRaw" alt="Uploaded retinal fundus" hidden><span id="imgRawStatus">Your fundus image</span></div><figcaption>Original image</figcaption></figure>
+          {% for key, name in [('Hyp','Hypertension'), ('Ckd','CKD'), ('Stroke','Stroke')] %}
+          <figure><div class="image-box"><img id="img{{ key }}" alt="{{ name }} model explanation" hidden><span id="img{{ key }}Status">No analysis yet</span></div><figcaption>{{ name }} evidence</figcaption></figure>
+          {% endfor %}
         </div>
-    </nav>
-
-    <header class="py-4 bg-white border-bottom text-center">
-        <div class="container">
-            <h1 class="display-6 fw-bold text-primary">Microvascular Risk Screening</h1>
-            <p class="lead text-muted small">Dual-Stream AI analysis of retinal biomarkers.</p>
+        <div class="legend"><span class="colour-ramp"></span><span>Lower → higher relative attribution</span></div>
+        <p class="hint">Grad-CAM is spatially coarse. Highlights explain model behaviour; they do not identify a lesion or establish vessel damage. The activation grid shows the actual coarse resolution without smoothing.</p>
+      </section>
+      <section class="panel vessel-panel">
+        <div class="section-heading"><div><span class="step">03 / VESSEL STREAM</span><h2>U-Net vascular network</h2></div><span class="pill mint">Segmentation</span></div>
+        <div class="image-grid vessel-grid">
+          <figure><div class="image-box"><img id="imgVesselOverlay" alt="U-Net segmented vessels overlaid on the original" hidden><span id="imgVesselOverlayStatus">Vessel overlay</span></div><figcaption>Vessel overlay</figcaption></figure>
+          <figure><div class="image-box"><img id="imgVesselMask" alt="U-Net binary vessel mask" hidden><span id="imgVesselMaskStatus">Binary vessel mask</span></div><figcaption>Vessel mask · cutoff 0.50</figcaption></figure>
+          <figure><div class="image-box"><img id="imgVesselProbability" alt="U-Net vessel probability map" hidden><span id="imgVesselProbabilityStatus">Segmentation output</span></div><figcaption>Vessel probability map</figcaption></figure>
         </div>
-    </header>
-
-    <div class="container my-4">
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="card p-4 shadow-sm border-0 mb-4 h-100">
-                    <h5 class="text-secondary mb-3 small fw-bold text-uppercase"><i class="bi bi-person-plus"></i> Patient Screening</h5>
-                    <form id="uploadForm">
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Upload Fundus Image:</label>
-                            <input type="file" id="imageInput" class="form-control form-control-sm" accept="image/*" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm" id="analyzeBtn">
-                            <i class="bi bi-cpu"></i> Run Dual-Stream AI
-                        </button>
-                    </form>
-
-                    <div id="loading" class="text-center mt-4 d-none">
-                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                        <p class="mt-2 small fw-bold text-primary">Syncing Hybrid Ensemble...</p>
-                    </div>
-
-                    <div id="results" class="mt-4 d-none">
-                        <h6 class="text-center border-bottom pb-2 mb-3 small fw-bold text-muted">PREDICTED 5-YEAR RISK</h6>
-                        <div class="risk-row d-flex justify-content-between py-2 border-bottom border-light">
-                            <span><i class="bi bi-activity"></i> Stroke:</span> 
-                            <strong id="strokeScore">--</strong>
-                        </div>
-                        <div class="risk-row d-flex justify-content-between py-2 border-bottom border-light">
-                            <span><i class="bi bi-droplet-fill"></i> CKD Risk:</span> 
-                            <strong id="ckdScore">--</strong>
-                        </div>
-                        <div class="risk-row d-flex justify-content-between py-2">
-                            <span><i class="bi bi-speedometer2"></i> Hypertension:</span> 
-                            <strong id="hypScore">--</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-8">
-                <div id="xaiPlaceholder" class="card p-5 shadow-sm h-100 border-0 text-center justify-content-center bg-white">
-                    <i class="bi bi-intersect display-1 text-light"></i>
-                    <p class="text-muted mt-3">Upload a fundus scan to generate clinical attention maps.</p>
-                </div>
-
-                <div id="xaiArea" class="card p-4 shadow-sm h-100 border-0 d-none">
-                    <h5 class="text-secondary mb-3 small fw-bold text-uppercase"><i class="bi bi-search"></i> Comparative Evidence (Grad-CAM)</h5>
-                    <div class="row g-2">
-                        <div class="col-md-4">
-                            <div class="img-container p-2 rounded shadow-sm text-center">
-                                <p class="img-label text-white-50 mb-1">RAW FUNDUS</p>
-                                <img id="originalDisplay" src="" class="img-fluid rounded" alt="Original">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="img-container p-2 rounded shadow-sm text-center">
-                                <p class="img-label text-info mb-1">STROKE/CKD MAP</p>
-                                <img id="heatmapMainDisplay" src="" class="img-fluid rounded" alt="Stroke Analysis">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="img-container p-2 rounded shadow-sm text-center border-specialist">
-                                <p class="img-label text-warning mb-1">HYPERTENSION MAP</p>
-                                <img id="heatmapHypDisplay" src="" class="img-fluid rounded" alt="Hypertension Analysis">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-primary mt-4 mb-0 shadow-sm">
-                        <h6 class="fw-bold mb-1 small text-primary"><i class="bi bi-clipboard-pulse"></i> CLINICAL INTERPRETATION:</h6>
-                        <p id="insightText" class="small mb-0 text-dark">Awaiting analysis...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <dl class="metrics"><div><dt>Vessel area / field</dt><dd id="vesselArea">—</dd></div><div><dt>Skeleton pixels</dt><dd id="vesselLength">—</dd></div><div><dt>Processed size</dt><dd id="vesselSize">—</dd></div></dl>
+        <p id="vesselNote" class="hint">Vessel measurements will appear after analysis. No normal/abnormal reference range is assumed.</p>
+      </section>
     </div>
-
-    <footer class="bg-white py-4 mt-5 border-top text-center">
-        <p class="mb-1 fw-bold text-dark">Developed by: Abir Kumar Chakraborty & Adrija Saha</p>
-        <p class="mb-0 text-muted small">IEM Kolkata | Guided by Prof. Shreejita Mukherjee</p>
-    </footer>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+  </div>
+  <section class="panel interpretation-panel" id="interpretationPanel">
+    <div class="section-heading"><div><span class="step">04 / FINAL REVIEW</span><h2>Clinical interpretation</h2></div><a id="reportLink" class="button secondary small" hidden target="_blank" rel="noopener">Open printable report ↗</a></div>
+    <p id="interpretationPlaceholder" class="muted">Run an analysis to receive a findings-based interpretation of both streams.</p>
+    <div id="interpretationResults" hidden>
+      <div class="conclusion"><span class="pill">Image-based research summary</span><p id="clinicalSummary"></p><p id="clinicalCaution" class="hint"></p></div>
+      <div id="clinicalFindings" class="findings-grid"></div>
+      <details><summary>Measurement limits and clinical context</summary><div class="review-columns"><div><h3>Clinical correlation</h3><ul id="clinicalCorrelation"></ul></div><div><h3>Limits of this analysis</h3><ul id="clinicalLimitations"></ul></div></div></details>
+      <details><summary>Clinical references</summary><ul id="clinicalReferences"></ul></details>
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='script.js') }}" defer></script>{% endblock %}

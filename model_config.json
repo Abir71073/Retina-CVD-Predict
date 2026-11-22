@@ -1,0 +1,20 @@
+{
+  "stroke": {
+    "file": "stroke_specialist.keras",
+    "preprocessing": "rgb_0_255",
+    "positive_label": "Checkpoint output 1 (training mapping unverified)",
+    "provenance": "Matching specialist training code is absent. Preserve the original app's EfficientNet input scale; do not guess or invert labels. The older notebook maps max(H,O) to stroke_target, but trains a different ResNet model."
+  },
+  "ckd": {
+    "file": "ckd_specialist.keras",
+    "preprocessing": "rgb_0_255",
+    "positive_label": "Checkpoint output 1 (training mapping unverified)",
+    "provenance": "Matching specialist training code is absent. Preserve the original app's EfficientNet input scale; do not guess or invert labels. The older notebook maps D to ckd_target, but trains a different ResNet model."
+  },
+  "hyp": {
+    "file": "hypertension_specialist.keras",
+    "preprocessing": "rgb_0_1",
+    "positive_label": "H=1, as defined in the supplied training notebook",
+    "provenance": "The matching EfficientNetB3 / Dense(256) training cell uses ImageDataGenerator(rescale=1./255). Keep this legacy input convention for these weights. New retraining should use raw RGB and update this setting together."
+  }
+}
